@@ -2,7 +2,7 @@
 <html lang="en" data-theme="default">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no" />
 <title>Voltek Sales Management System</title>
 <link rel="manifest" href="manifest.json" />
 <meta name="theme-color" content="#15191e" />
@@ -48,12 +48,19 @@
     --shadow:0 8px 24px rgba(40,55,75,.10);
   }
 
-  *{box-sizing:border-box}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html{-webkit-text-size-adjust:100%}
   html,body{margin:0;padding:0}
   body{
     font-family:var(--font); background:var(--bg); color:var(--text);
     min-height:100vh; -webkit-font-smoothing:antialiased;
+    overscroll-behavior-y:none; touch-action:manipulation;
   }
+  button,.btn,.navbtn,.lane-tab,.icon-btn,.proj-card,.tabbar-btn,.lane-pill,.role-chip,.file-tag{
+    user-select:none;-webkit-user-select:none;
+  }
+  img{-webkit-user-drag:none;user-select:none}
+  button:active,.btn:active{transform:scale(.97)}
   button{font-family:inherit;cursor:pointer}
   input,select{font-family:inherit}
   .hidden{display:none !important}
@@ -161,6 +168,18 @@
   }
   table.dash td.rank{font-size:16px;width:54px}
   table.dash tr.leader td{background:linear-gradient(90deg,rgba(239,108,46,.10),transparent 70%)}
+  .cbadge{font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;white-space:nowrap}
+  .cbadge.active{background:rgba(63,174,111,.18);color:#3fae6f}
+  .cbadge.expiring{background:rgba(239,108,46,.20);color:var(--accent);animation:pulse-node 1.6s infinite;display:inline-block}
+  .cbadge.expired{background:rgba(197,70,60,.20);color:#ff8d7a}
+  .mini-link{text-decoration:none;font-size:14px;margin-left:4px}
+  table.dash tr.c-expired td{background:rgba(197,70,60,.10)}
+  table.dash tr.c-expiring td{background:rgba(239,108,46,.10)}
+  .contract-box{border:1px dashed var(--field-line);border-radius:12px;padding:14px;margin-top:4px}
+  .dates-row{display:flex;gap:10px}
+  .contract-dates{font-size:13px;color:var(--text);margin-bottom:10px}
+  input[type="date"]{width:100%;padding:11px 12px;border-radius:10px;border:1px solid var(--field-line);background:var(--field);color:var(--text);font-size:14px;outline:none}
+  input[type="date"]:focus{border-color:var(--accent)}
   .role-chip{
     font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;
     padding:5px 10px;border-radius:999px;background:var(--chip-bg);color:var(--muted);
@@ -341,9 +360,69 @@
     opacity:0;transition:opacity .25s,transform .25s;
   }
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-  @media (max-width:560px){
-    .topbar h2{font-size:13px}
-    .topbar .logo{display:none}
+  /* ---------- APP SHELL EXTRAS ---------- */
+  header.topbar{padding-top:env(safe-area-inset-top)}
+  #alertStack{top:calc(14px + env(safe-area-inset-top))}
+
+  /* view transition */
+  .view-anim{animation:viewIn .26s ease}
+  @keyframes viewIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+
+  /* scrollable tables (any screen) */
+  .table-scroll{
+    overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--line);
+    border-radius:var(--radius);background:var(--panel);
+  }
+  .table-scroll table.dash{border:none;border-radius:0;min-width:620px;width:100%}
+  .table-scroll table.users{min-width:540px;width:100%;margin-top:0}
+
+  /* bottom tab bar (mobile) */
+  .tabbar{
+    display:none;position:fixed;left:0;right:0;bottom:0;z-index:40;
+    background:var(--header);border-top:1px solid var(--line);
+    padding:6px 8px calc(8px + env(safe-area-inset-bottom));
+    justify-content:space-around;align-items:stretch;
+  }
+  .tabbar-btn{
+    background:none;border:none;color:var(--muted);flex:1;max-width:130px;
+    display:flex;flex-direction:column;align-items:center;gap:3px;
+    font-size:11px;font-weight:700;padding:7px 6px;border-radius:12px;
+    transition:color .15s;
+  }
+  .tabbar-btn svg{width:22px;height:22px}
+  .tabbar-btn.active{color:var(--accent)}
+  .tabbar-btn:active{transform:scale(.93)}
+
+  /* fluid type for key numbers */
+  .stat.top.hero .v{font-size:clamp(26px,7vw,42px)}
+  .tracker-head h3{font-size:clamp(18px,5.4vw,22px)}
+
+  @media (max-width:760px){
+    .tabbar{display:flex}
+    .topnav{display:none}
+    #settingsBtn{display:none}
+    .topbar h2{display:none}
+    .topbar .logo{display:flex}
+    .topbar-in{padding:10px 14px}
+    main{padding:16px 14px calc(92px + env(safe-area-inset-bottom))}
+    .dash-cards{grid-template-columns:repeat(2,1fr);gap:10px}
+    .stat{padding:13px}
+    .stat .v{font-size:20px}
+    .stat.top.hero{grid-column:1 / -1;padding:18px 18px}
+    .grid{grid-template-columns:1fr}
+    .field input,select,.note-input,input[type="date"]{font-size:16px} /* stop iOS auto-zoom */
+    .check-row input{width:22px;height:22px}
+    .step{padding-left:36px}
+    .modal-bg{padding:0;align-items:flex-end}
+    .modal{max-width:none;border-radius:20px 20px 0 0;max-height:92vh;overflow:auto}
+    .modal-foot{padding-bottom:calc(16px + env(safe-area-inset-bottom))}
+    .tracker-head .btn{padding:8px 11px}
+  }
+  @media (max-width:380px){
+    .dash-cards{grid-template-columns:1fr}
+  }
+  @media (min-width:761px){
+    .tabbar{display:none !important}
   }
   @media (prefers-reduced-motion: reduce){*{transition:none !important}}
 </style>
@@ -431,6 +510,21 @@
       <div class="timeline" id="timeline"></div>
     </div>
   </main>
+
+  <nav class="tabbar" id="tabbar">
+    <button class="tabbar-btn active" id="tabHome">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+      Dashboard
+    </button>
+    <button class="tabbar-btn" id="tabSales">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6h12M9 12h12M9 18h12"/><path d="M3.5 6l1 1 2-2M3.5 12l1 1 2-2M3.5 18l1 1 2-2"/></svg>
+      Sales Ops
+    </button>
+    <button class="tabbar-btn" id="tabSettings">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5 5l2.1 2.1M16.9 16.9L19 19M19 5l-2.1 2.1M7.1 16.9L5 19"/></svg>
+      Settings
+    </button>
+  </nav>
 </div>
 
 <div id="modalRoot"></div>
@@ -500,6 +594,7 @@ function toast(msg, isErr){
   toastT=setTimeout(()=>t.classList.remove("show"),2600);
 }
 function fmtDate(s){ if(!s)return ""; const d=new Date(s); return d.toLocaleString(); }
+function scrollWrap(tbl){ const d=el("div","table-scroll"); d.appendChild(tbl); return d; }
 
 /* ============ STATE ============ */
 let CURRENT_USER = null;     // {id, username, role}
@@ -562,6 +657,7 @@ function enterApp(){
   chip.textContent = CURRENT_USER.username+" · "+CURRENT_USER.role;
   showView("dashboard");
   startNotifications();
+  checkContracts();
 }
 
 /* ============ VIEW SWITCH ============ */
@@ -571,6 +667,13 @@ function showView(v){
   $("#trackerView").classList.toggle("hidden", v!=="tracker");
   $("#navHome").classList.toggle("active", v==="dashboard");
   $("#navSales").classList.toggle("active", v==="sales" || v==="tracker");
+  const th=$("#tabHome"), ts=$("#tabSales");
+  if(th) th.classList.toggle("active", v==="dashboard");
+  if(ts) ts.classList.toggle("active", v==="sales" || v==="tracker");
+  const ids={dashboard:"dashboardView",sales:"projectsView",tracker:"trackerView"};
+  const pane=$("#"+ids[v]);
+  if(pane){ pane.classList.remove("view-anim"); void pane.offsetWidth; pane.classList.add("view-anim"); }
+  try{ window.scrollTo({top:0}); }catch(e){}
   if(v==="dashboard") loadDashboard();
   if(v==="sales") loadProjects();
 }
@@ -677,6 +780,38 @@ async function loadDashboard(){
     }
   }
 
+  // ---- contracts overview (admin only, soonest expiry first) ----
+  if(CURRENT_USER.role==="admin"){
+    const {data:cu, error:ce} = await sb.from("users")
+      .select("username,contract_url,contract_name,contract_start,contract_end").eq("role","sales");
+    wrap.appendChild(el("div","dash-subhead","📄 Contracts — soonest expiry first"));
+    if(ce){
+      wrap.appendChild(el("div","empty","Could not load contracts — re-run supabase_setup.sql to add the contract columns."));
+    } else if(!cu || !cu.length){
+      wrap.appendChild(el("div","empty","No sales users yet."));
+    } else {
+      const t3=el("table","dash");
+      t3.innerHTML="<tr><th>Salesperson</th><th>Duration</th><th>Status</th><th>Agreement</th></tr>";
+      cu.slice().sort((a,b)=>{
+        if(!a.contract_end && !b.contract_end) return a.username.localeCompare(b.username);
+        if(!a.contract_end) return 1;
+        if(!b.contract_end) return -1;
+        return a.contract_end.localeCompare(b.contract_end);
+      }).forEach(u=>{
+        const st=contractStatus(u);
+        const tr=el("tr");
+        if(st && st.cls==="expired") tr.className="c-expired";
+        else if(st && st.cls==="expiring") tr.className="c-expiring";
+        tr.innerHTML=`<td>${escapeHtml(u.username)}</td>
+          <td>${u.contract_start||"—"} → ${u.contract_end||"—"}</td>
+          <td>${st?`<span class="cbadge ${st.cls}">${st.label}</span>`:"<span style='color:var(--muted)'>No dates set</span>"}</td>
+          <td>${u.contract_url?`<a class="mini-link" href="${u.contract_url}" target="_blank" rel="noopener">📎 View</a>&nbsp; <a class="mini-link" href="${downloadUrl(u.contract_url,u.contract_name)}">⬇ Download</a>`:"<span style='color:var(--muted)'>Not uploaded</span>"}</td>`;
+        t3.appendChild(tr);
+      });
+      wrap.appendChild(scrollWrap(t3));
+    }
+  }
+
   // ---- leaderboard ----
   if(names.length){
     wrap.appendChild(el("div","dash-subhead","🏁 Leaderboard"));
@@ -696,7 +831,7 @@ async function loadDashboard(){
         <td class="num">${r.confirmedComm.toLocaleString()}</td>`;
       t.appendChild(tr);
     });
-    wrap.appendChild(t);
+    wrap.appendChild(scrollWrap(t));
   } else {
     wrap.appendChild(el("div","empty","No sales users yet."));
   }
@@ -720,7 +855,7 @@ async function loadDashboard(){
         <td><span class="${cls}">${status}</span></td>`;
       t2.appendChild(tr);
     });
-    wrap.appendChild(t2);
+    wrap.appendChild(scrollWrap(t2));
   }
 }
 
@@ -981,6 +1116,47 @@ async function maybeNotifyNext(step_no){
   const msg = `"${CURRENT_PROJECT.name}": ${next.title} is now ready for ${LANE_LABEL[next.lane]}.`;
   await sb.from("notifications").insert({target_role:targetRole, project_id:CURRENT_PROJECT.id, message:msg, created_by:CURRENT_USER.username});
 }
+/* ============ CONTRACTS (admin ↔ sales) ============ */
+function contractStatus(u){
+  if(!u || !u.contract_end) return null;
+  const end = new Date(u.contract_end+"T23:59:59");
+  const days = Math.ceil((end - Date.now())/86400000);
+  if(days < 0)  return {label:"Expired "+Math.abs(days)+"d ago", cls:"expired", days};
+  if(days <= 30) return {label:"Ends in "+days+" day"+(days===1?"":"s"), cls:"expiring", days};
+  return {label:"Active · "+days+" days left", cls:"active", days};
+}
+async function uploadContractFile(file, username){
+  const safe = file.name.replace(/[^a-zA-Z0-9._-]/g,"_");
+  const path = `contracts/${username.replace(/[^a-zA-Z0-9_-]/g,"_")}_${Date.now()}_${safe}`;
+  const {error} = await sb.storage.from(BUCKET).upload(path, file, {upsert:true, contentType:file.type||"application/pdf"});
+  if(error) throw error;
+  const {data:pub} = sb.storage.from(BUCKET).getPublicUrl(path);
+  return {url:pub.publicUrl, name:file.name};
+}
+async function checkContracts(){
+  if(!CURRENT_USER) return;
+  const today = new Date().toISOString().slice(0,10);
+  const key = "voltek_contractalert_"+CURRENT_USER.username+"_"+today;
+  if(safeStore.get(key)) return; // one reminder per day
+  try{
+    if(CURRENT_USER.role==="admin"){
+      const {data} = await sb.from("users").select("username,contract_end").eq("role","sales").not("contract_end","is",null);
+      (data||[]).forEach(u=>{
+        const st=contractStatus(u);
+        if(st && st.cls==="expired") alertBanner(`📄 Contract for ${u.username} has EXPIRED (${u.contract_end}). Please renew.`);
+        else if(st && st.cls==="expiring") alertBanner(`📄 Contract for ${u.username} ends in ${st.days} day${st.days===1?"":"s"} (${u.contract_end}).`);
+      });
+    } else if(CURRENT_USER.role==="sales"){
+      const {data} = await sb.from("users").select("contract_end").eq("id",CURRENT_USER.id).limit(1);
+      const u=(data||[])[0];
+      const st=contractStatus(u);
+      if(st && st.cls==="expired") alertBanner(`📄 Your contract has EXPIRED (${u.contract_end}). Please contact admin.`);
+      else if(st && st.cls==="expiring") alertBanner(`📄 Your contract ends in ${st.days} day${st.days===1?"":"s"} (${u.contract_end}).`);
+    }
+    safeStore.set(key,"1");
+  }catch(e){}
+}
+
 let notifTimer=null, notifChannel=null;
 function startNotifications(){
   // baseline: don't replay history older than last seen / login
@@ -1106,6 +1282,13 @@ function settingsModal(){
   pwRow.appendChild(pwBtn);
   body.appendChild(pwRow);
 
+  // MY CONTRACT (sales users)
+  if(CURRENT_USER.role==="sales"){
+    const cRow=el("div","settings-row");
+    cRow.innerHTML=`<div class="lbl">My contract</div><div class="hint">Your contract agreement and duration, managed by admin.</div><div id="myContractWrap">Loading…</div>`;
+    body.appendChild(cRow);
+  }
+
   // USER MANAGEMENT (admin)
   if(CURRENT_USER.role==="admin"){
     const uRow=el("div","settings-row");
@@ -1119,6 +1302,31 @@ function settingsModal(){
 
   modal("Settings", body);
   if(CURRENT_USER.role==="admin") loadUsersTable();
+  if(CURRENT_USER.role==="sales") loadMyContract();
+}
+
+async function loadMyContract(){
+  const wrap=$("#myContractWrap"); if(!wrap) return;
+  const {data,error}=await sb.from("users").select("contract_url,contract_name,contract_start,contract_end").eq("id",CURRENT_USER.id).limit(1);
+  if(error){ wrap.innerHTML="<span style='color:#ff8d7a;font-size:12px'>Could not load contract.</span>"; return; }
+  const u=(data||[])[0]||{};
+  const st=contractStatus(u);
+  let html="";
+  if(st) html += `<div style="margin-bottom:10px"><span class="cbadge ${st.cls}">${st.label}</span></div>`;
+  if(u.contract_start || u.contract_end){
+    html += `<div class="contract-dates">Duration: <b>${u.contract_start||"—"}</b> → <b>${u.contract_end||"—"}</b></div>`;
+  }
+  wrap.innerHTML = html || "";
+  if(u.contract_url){
+    const row=el("div","file-row");
+    const vw=el("a","file-tag"); vw.href=u.contract_url; vw.target="_blank"; vw.rel="noopener";
+    vw.innerHTML="📎 "+escapeHtml(u.contract_name||"Contract agreement");
+    const dl=el("a","file-tag"); dl.href=downloadUrl(u.contract_url,u.contract_name); dl.innerHTML="⬇ Download";
+    row.appendChild(vw); row.appendChild(dl);
+    wrap.appendChild(row);
+  } else if(!html){
+    wrap.innerHTML="<span style='color:var(--muted);font-size:13px'>No contract uploaded yet.</span>";
+  }
 }
 
 async function loadUsersTable(){
@@ -1127,10 +1335,18 @@ async function loadUsersTable(){
   const {data,error}=await sb.from("users").select("*").order("created_at");
   if(error){ wrap.innerHTML="<span style='color:#ff8d7a;font-size:12px'>Could not load users.</span>"; return; }
   const t=el("table","users");
-  t.innerHTML="<tr><th>Username</th><th>Role</th><th></th></tr>";
+  t.innerHTML="<tr><th>Username</th><th>Role</th><th>Contract</th><th></th></tr>";
   data.forEach(u=>{
     const tr=el("tr");
-    tr.innerHTML=`<td>${escapeHtml(u.username)}</td><td><span class="tag-role">${u.role}</span></td>`;
+    let contractCell="<span style='color:var(--muted)'>—</span>";
+    if(u.role==="sales"){
+      const st=contractStatus(u);
+      const links = u.contract_url
+        ? ` <a class="mini-link" href="${u.contract_url}" target="_blank" rel="noopener">📎</a> <a class="mini-link" href="${downloadUrl(u.contract_url,u.contract_name)}">⬇</a>`
+        : "";
+      contractCell = (st?`<span class="cbadge ${st.cls}">${st.label}</span>`:"<span style='color:var(--muted)'>None</span>")+links;
+    }
+    tr.innerHTML=`<td>${escapeHtml(u.username)}</td><td><span class="tag-role">${u.role}</span></td><td>${contractCell}</td>`;
     const td=el("td"); td.style.textAlign="right";
     const edit=el("button","btn ghost sm","Edit"); edit.onclick=()=>userModal(u); edit.style.marginRight="6px";
     td.appendChild(edit);
@@ -1143,36 +1359,65 @@ async function loadUsersTable(){
     }
     tr.appendChild(td); t.appendChild(tr);
   });
-  wrap.innerHTML=""; wrap.appendChild(t);
+  wrap.innerHTML=""; wrap.appendChild(scrollWrap(t));
 }
 
 function userModal(existing){
   const body=el("div");
+  const ex = existing||{};
   body.innerHTML=`
     <div class="field"><label>Username</label><input id="umUser" value="${existing?escapeHtml(existing.username):""}" placeholder="username"/></div>
     <div class="field"><label>Role</label>
       <select id="umRole" style="width:100%;padding:12px 13px;border-radius:10px;border:1px solid var(--field-line);background:var(--field);color:var(--text)">
         <option value="sales">Sales</option><option value="account">Account</option><option value="admin">Admin</option>
       </select></div>
-    <div class="field"><label>${existing?"New password (leave blank to keep)":"Password"}</label><input id="umPass" type="password" placeholder="password"/></div>`;
+    <div class="field"><label>${existing?"New password (leave blank to keep)":"Password"}</label><input id="umPass" type="password" placeholder="password"/></div>
+    <div id="umContract" class="contract-box">
+      <div class="lbl" style="font-size:13px;font-weight:700;margin-bottom:2px">Contract (sales only)</div>
+      <div class="hint" style="color:var(--muted);font-size:12px;margin-bottom:10px">Upload the agreement PDF and set the contract duration. Visible only to admin and this sales user.</div>
+      <div class="field"><label>Contract agreement (PDF)</label>
+        <label class="file-input-label" style="display:block;text-align:center">${ex.contract_name?("Replace: "+escapeHtml(ex.contract_name)):"Upload PDF"}<input id="umContractFile" type="file" accept="application/pdf" style="display:none"/></label>
+        <div id="umContractPicked" style="font-size:12px;color:var(--muted);margin-top:6px"></div>
+      </div>
+      <div class="dates-row">
+        <div class="field" style="flex:1"><label>Contract start</label><input id="umStart" type="date" value="${ex.contract_start||""}"/></div>
+        <div class="field" style="flex:1"><label>Contract end</label><input id="umEnd" type="date" value="${ex.contract_end||""}"/></div>
+      </div>
+    </div>`;
   const foot=el("div"); foot.style.display="flex"; foot.style.gap="10px";
   const cancel=el("button","btn ghost sm","Cancel"); cancel.onclick=()=>settingsModal();
   const save=el("button","btn sm", existing?"Save changes":"Create user");
   foot.appendChild(cancel); foot.appendChild(save);
   modal(existing?"Edit user":"Add user", body, foot);
   if(existing) $("#umRole").value=existing.role;
+  const syncContractVis=()=>{ $("#umContract").style.display = $("#umRole").value==="sales" ? "block" : "none"; };
+  $("#umRole").onchange=syncContractVis; syncContractVis();
+  $("#umContractFile").onchange=e=>{ const f=e.target.files[0]; $("#umContractPicked").textContent = f? ("Selected: "+f.name) : ""; };
   save.onclick=async()=>{
     const username=$("#umUser").value.trim(); const role=$("#umRole").value; const pass=$("#umPass").value;
     if(!username){toast("Enter a username",true);return;}
+    const patch={username, role};
+    if(role==="sales"){
+      const start=$("#umStart").value, end=$("#umEnd").value;
+      if(start && end && end<start){ toast("Contract end must be after start",true); return; }
+      patch.contract_start = start||null;
+      patch.contract_end   = end||null;
+      const f = $("#umContractFile").files[0];
+      if(f){
+        if(f.type && f.type!=="application/pdf" && !/\.pdf$/i.test(f.name)){ toast("Contract must be a PDF",true); return; }
+        toast("Uploading contract…");
+        try{ const up=await uploadContractFile(f, username); patch.contract_url=up.url; patch.contract_name=up.name; }
+        catch(e){ toast("Contract upload failed: "+e.message,true); return; }
+      }
+    }
     if(existing){
-      const patch={username, role};
       if(pass) patch.password_hash=await sha256(pass);
       const {error}=await sb.from("users").update(patch).eq("id",existing.id);
       if(error){toast("Save failed: "+error.message,true);return;} toast("User updated");
     } else {
       if(pass.length<4){toast("Password: at least 4 characters",true);return;}
-      const hash=await sha256(pass);
-      const {error}=await sb.from("users").insert({username,role,password_hash:hash});
+      patch.password_hash=await sha256(pass);
+      const {error}=await sb.from("users").insert(patch);
       if(error){toast("Create failed: "+error.message,true);return;} toast("User created");
     }
     settingsModal();
@@ -1225,6 +1470,10 @@ create table if not exists notifications (
 -- safe upgrade if tables already existed
 alter table projects add column if not exists commission numeric default 0;
 alter table step_progress add column if not exists note text;
+alter table users add column if not exists contract_url text;
+alter table users add column if not exists contract_name text;
+alter table users add column if not exists contract_start date;
+alter table users add column if not exists contract_end date;
 
 -- Permissive policies for the shared anon key (internal tool)
 alter table users enable row level security;
@@ -1269,6 +1518,9 @@ $("#newProjectBtn").onclick=newProjectModal;
 $("#refreshDashBtn").onclick=loadDashboard;
 $("#navHome").onclick=()=>showView("dashboard");
 $("#navSales").onclick=()=>showView("sales");
+$("#tabHome").onclick=()=>showView("dashboard");
+$("#tabSales").onclick=()=>showView("sales");
+$("#tabSettings").onclick=settingsModal;
 $("#backBtn").onclick=()=>showView("sales");
 $("#editSaleBtn").onclick=editSaleModal;
 $("#deleteSaleBtn").onclick=deleteSale;
